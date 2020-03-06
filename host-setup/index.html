@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Host-Setup - lxd-manager</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Host-Setup";
+    var mkdocs_page_input_path = "host-setup.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> lxd-manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Host-Setup</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#interfaces">Interfaces</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#deploy-the-machine">Deploy the machine</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on-machine">On Machine</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#storage-pool">Storage pool</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#snap">snap</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#kernel-keyring-size">Kernel Keyring size</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#time">Time</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#prepare-lxd">prepare lxd</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#profile">Profile</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#test">Test</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-the-host-to-the-managment">Adding the host to the managment</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#subnet">Subnet</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#host">Host</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#permission-denied-to-mount">Permission denied to mount</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#adding-host-fails">Adding host fails</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">lxd-manager</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Host-Setup</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="host-setup-for-lxd-manager">Host Setup for lxd-manager</h1>
+<h3 id="interfaces">Interfaces</h3>
+<ul>
+<li>Create a bridge <code>lxdextern</code> with the external ethernet as single port.</li>
+<li>Assign it a static or DHCP IP address.</li>
+</ul>
+<h3 id="storage">Storage</h3>
+<ul>
+<li>Create 2 small partitions <code>50GB</code> at the beginning of each disk. Raid 1 them together and set the mountpoint to <code>/</code> with <code>ext4</code>.</li>
+<li>Create 2 large partitions with the rest of the disks. Do not format them.</li>
+</ul>
+<h3 id="deploy-the-machine">Deploy the machine</h3>
+<p>with a recent ubuntu</p>
+<h2 id="on-machine">On Machine</h2>
+<h3 id="storage-pool">Storage pool</h3>
+<p>We use <code>btrfs</code> for the container storage, as it works well with nested containers. The drawbacks are reduced quota control, which is not a factor in our setting.</p>
+<p>As raid members, use the 2 large partitions of the disks (probably <code>/dev/sd?2</code> or <code>/dev/sd?3</code> (if EFI partition available)).</p>
+<pre><code>mkfs.btrfs -L lxd -d raid1 /dev/sda? /dev/sdb?
+</code></pre>
+
+<p>The filesystem can be verified by any of the participating partitions</p>
+<pre><code>btrfs filesystem show /dev/sda?
+</code></pre>
+
+<p>Create mount directory</p>
+<pre><code>mkdir /media/pool
+</code></pre>
+
+<p>and append a line in <code>etc/fstab</code></p>
+<pre><code>/dev/sda?  /media/pool  btrfs user_subvol_rm_allowed 0 0
+</code></pre>
+
+<p>and mount the fs with <code>mount /media/pool</code></p>
+<h3 id="snap">snap</h3>
+<p>Uninstall the <code>apt</code> lxd version</p>
+<pre><code>sudo apt-get remove --purge lxd lxd-client
+</code></pre>
+
+<p>Install the stable channel from snap. This is a more frequently updated stable release instead of the apt version, which only receives security bug fixes.</p>
+<pre><code class="bash">snap install lxd
+</code></pre>
+
+<h3 id="kernel-keyring-size">Kernel Keyring size</h3>
+<p>As the kernel keyring is not namespaced, it needs to be large enough:</p>
+<p>Add <code>kernel.keys.maxkeys = 5000</code> to <code>/etc/sysctl.conf</code> and apply it with <code>sysctl -p</code></p>
+<h3 id="time">Time</h3>
+<p>For the distributed database to work, all nodes have to be in sync regarding time. Therefore install </p>
+<pre><code class="bash">apt-get install ntp
+</code></pre>
+
+<h2 id="prepare-lxd">prepare lxd</h2>
+<p>Set up the cluster master run <code>sudo lxd init</code>, here vs-node5 as example.</p>
+<pre><code>sudo lxd init
+Would you like to use LXD clustering? (yes/no) [default=no]: 
+Do you want to configure a new storage pool? (yes/no) [default=yes]: 
+Name of the new storage pool [default=default]: 
+Name of the storage backend to use (btrfs, ceph, dir, lvm, zfs) [default=zfs]: btrfs
+Create a new BTRFS pool? (yes/no) [default=yes]: no
+Name of the existing BTRFS pool or dataset: /media/pool
+Would you like to connect to a MAAS server? (yes/no) [default=no]: 
+Would you like to create a new local network bridge? (yes/no) [default=yes]: 
+What should the new bridge be called? [default=lxdbr0]: lxdintern
+What IPv4 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]: 
+What IPv6 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]: none
+Would you like LXD to be available over the network? (yes/no) [default=no]: yes
+Address to bind LXD to (not including port) [default=all]: 
+Port to bind LXD to [default=8443]: 
+Trust password for new clients: 
+Again: 
+Would you like stale cached images to be updated automatically? (yes/no) [default=yes] 
+Would you like a YAML &quot;lxd init&quot; preseed to be printed? (yes/no) [default=no]: yes
+config:
+  core.https_address: '[::]:8443'
+  core.trust_password: ****
+networks:
+- config:
+    ipv4.address: auto
+    ipv6.address: none
+  description: &quot;&quot;
+  managed: false
+  name: lxdintern
+  type: &quot;&quot;
+storage_pools:
+- config:
+    source: /media/pool
+  description: &quot;&quot;
+  name: default
+  driver: btrfs
+profiles:
+- config: {}
+  description: &quot;&quot;
+  devices:
+    eth0:
+      name: eth0
+      nictype: bridged
+      parent: lxdintern
+      type: nic
+    root:
+      path: /
+      pool: default
+      type: disk
+  name: default
+cluster: null
+</code></pre>
+
+<p>You can check if the cluster is set up correctly with <code>lxc cluster list</code></p>
+<h3 id="profile">Profile</h3>
+<p>Add devices to the default profile <code>lxc profile edit default</code></p>
+<pre><code>devices:
+  eth0:
+    name: eth0
+    nictype: bridged
+    parent: lxdintern
+    type: nic
+  eth1:
+    name: eth1
+    nictype: bridged
+    parent: lxdextern
+    type: nic
+  root:
+    path: /
+    pool: local
+    type: disk
+
+</code></pre>
+
+<p>The <code>lxdintern</code> bridge must be attached to eth0, as the DHCP will query on this interface. This assures that the containers do not query for a DHCP IP on the bridged external bridge, but only fetch an IPv6 through this bridge. </p>
+<h3 id="test">Test</h3>
+<p>You can create a test container with </p>
+<pre><code>lxc launch ubuntu:18.04 test
+</code></pre>
+
+<p>and check it with <code>lxc list</code></p>
+<h2 id="adding-the-host-to-the-managment">Adding the host to the managment</h2>
+<p>authenticate with a superuser to the api</p>
+<h3 id="subnet">Subnet</h3>
+<p>add the subnet the host resides in.</p>
+<h3 id="host">Host</h3>
+<p>add a new host with a name, subnet and url as well as the trust pw.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="permission-denied-to-mount">Permission denied to mount</h3>
+<p><code>/media/pool/containers</code> needs 711 permissions</p>
+<h3 id="adding-host-fails">Adding host fails</h3>
+<p>Set the LXD_CA_CERT environment variable to false, if your lxd-host uses a self signed certificate.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../install/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../install/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

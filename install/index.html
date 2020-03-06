@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Installation - lxd-manager</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Installation";
+    var mkdocs_page_input_path = "install.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> lxd-manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Installation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-by-step-guide">Step-by-step guide</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repo">Repo</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#web-proxy">Web Proxy</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#lxd-connection">LXD connection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dns">DNS</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#example">Example</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#secrets">Secrets</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#gitlab-oauth">Gitlab OAuth</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run">Run</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#backup">Backup</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../host-setup/">Host-Setup</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">lxd-manager</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Installation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="lxd-manager-deployment">LXD manager deployment</h1>
+<p>This is the repository which helps with the deployment of the lxd-manager. It is up to you to run all the required services on your own, but as it is rather complex, we help you with the following instructions.</p>
+<h2 id="requirements">Requirements</h2>
+<p>The services are all dockerised and require a linux host with the following software</p>
+<ul>
+<li><a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">docker</a></li>
+<li><a href="https://docs.docker.com/compose/install/">docker-compose</a></li>
+</ul>
+<h2 id="step-by-step-guide">Step-by-step guide</h2>
+<h3 id="repo">Repo</h3>
+<p>Clone this repository:</p>
+<pre><code>git clone https://github.com/lxd-manager/deploy.git
+</code></pre>
+<p>We suggest you create a branch with your actual configuration values.</p>
+<h3 id="web-proxy">Web Proxy</h3>
+<p>This docker-compose enables a reverse proxy for handling TLS. If you do NOT want to use this or provide you own ingress service, please remove the <code>reverse-proxy</code> section from the services defined in <code>docker-compose.yml</code> and provide a mean to access the <code>nginx</code> service on port 80.</p>
+<p>Otherwise create an external network with:</p>
+<pre><code>docker network create web
+</code></pre>
+<p>Decide on the FQDN where you will be hosting the webservice and replace <code>service-fqdn</code> at the docker-compose.yml file <code>nginx</code> service in the traefik labels.</p>
+<p>The proxy automatically generates Let's Encrypt TLS vertificates for the domain. For this, your email is required in the  <code>[certificatesResolvers.le.acme]</code> section of the <code>traefik.toml</code> file.</p>
+<h3 id="lxd-connection">LXD connection</h3>
+<p>The lxd api uses TLS client certificates as authentication mechanism. Therefore place a TLS key and (optionally self signed) certificate to <code>certs/lxd.key</code> and <code>certs/lxd.crt</code>.
+You add new hosts through the api, where you supply a trust password which is used to establish the certificate at the new host.</p>
+<pre><code>openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/lxd.key -out certs/lxd.crt -days 3650
+</code></pre>
+<p>There is an option to provide the CA certificate the server is using via the LXD_CA_CERT environment variable. If the lxd server uses the default self signed certificate, you have to set the variable to "False"</p>
+<h3 id="dns">DNS</h3>
+<p>There is a DNS server which generates responses based on the containers available in the database. This requires you to set up a NS delegation of the subdomain <code>ct-subdomain.d.tld.</code> under which the containers will be named to a nameserver <code>ns-fqdn.d.tld.</code> which points to your deployment.
+Replace <code>server-ip</code> in the ports section with the external IP where the DNS server should listen. (If it is an IPv6 address omit [ and ])</p>
+<h4 id="example">Example</h4>
+<p>In your DNS zone set:</p>
+<pre><code>ct.example.org.     1800    IN  NS  lxd-ui.example.org.
+lxd-ui.example.org. 1800    IN  A   1.2.3.4
+</code></pre>
+<p>and in <code>docker-compose.yml</code> set</p>
+<ul>
+<li><code>ns-fqdn.d.tld.</code> = <code>lxd-ui.example.org.</code></li>
+<li><code>ct-subdomain.d.tld.</code> = <code>ct.example.org.</code></li>
+</ul>
+<p>Your containers get FQDNs of the form <code>name.ct.example.net</code></p>
+<h3 id="secrets">Secrets</h3>
+<p>The services require credentials to communicate. For this purpose, please create the following files unter <code>secrets/</code>:</p>
+<ul>
+<li><code>secrets/ct_postgres</code> with 50 random alphanumeric characters (used as Database password of the <code>ctapi</code> user)</li>
+<li><code>secrets/db_encrypt</code> with 50 random alphanumeric characters (used to symmetrically encrypt the ssh host keys of the containers)</li>
+<li><code>secrets/gitlab_id</code> the id of the oauth application from gitlab</li>
+<li><code>secrets/gitlab_secret</code> the secret ot the oauth application</li>
+</ul>
+<p>The random passwords may be created by</p>
+<pre><code>head /dev/urandom | tr -dc A-Za-z0-9 | head -c 50 &gt; secrets/ct_postgres
+head /dev/urandom | tr -dc A-Za-z0-9 | head -c 50 &gt; secrets/db_encrypt
+</code></pre>
+<h4 id="gitlab-oauth">Gitlab OAuth</h4>
+<p>To get the gitlab_id and _secret, create an gitlab application with the following parameters:</p>
+<ul>
+<li>callback url:  https://ui-fqdn/social-auth/complete/gitlab/</li>
+<li>not trusted</li>
+<li>confidential (_id and _secret remains at the server)</li>
+<li>scopes: read_user</li>
+</ul>
+<p>set the gitlab url for the services beat, api, celery environments:</p>
+<pre><code>SOCIAL_AUTH_GITLAB_API_URL: "https://gitlab.yourdomain.com"
+</code></pre>
+<h3 id="run">Run</h3>
+<pre><code>docker-compose pull
+docker-compose up -d
+</code></pre>
+<p>to create an admin user, execute</p>
+<pre><code>docker-compose exec api python3 manage.py createsuperuser
+</code></pre>
+<h3 id="backup">Backup</h3>
+<p>To get clean backups, run the <code>backup.sh</code> before a system snapshot to dump the database into the backup folder.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../host-setup/" class="btn btn-neutral float-right" title="Host-Setup">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../host-setup/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
