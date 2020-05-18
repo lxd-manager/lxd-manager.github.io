@@ -166,12 +166,14 @@ lxd-ui.example.org. 1800    IN  A   1.2.3.4
 <p>The services require credentials to communicate. For this purpose, please create the following files unter <code>secrets/</code>:</p>
 <ul>
 <li><code>secrets/ct_postgres</code> with 50 random alphanumeric characters (used as Database password of the <code>ctapi</code> user)</li>
+<li><code>secrets/django_secret</code> with 50 random alphanumeric characters (used as django session secret)</li>
 <li><code>secrets/db_encrypt</code> with 50 random alphanumeric characters (used to symmetrically encrypt the ssh host keys of the containers)</li>
 <li><code>secrets/gitlab_id</code> the id of the oauth application from gitlab</li>
 <li><code>secrets/gitlab_secret</code> the secret ot the oauth application</li>
 </ul>
 <p>The random passwords may be created by</p>
 <pre><code>head /dev/urandom | tr -dc A-Za-z0-9 | head -c 50 &gt; secrets/ct_postgres
+head /dev/urandom | tr -dc A-Za-z0-9 | head -c 50 &gt; secrets/django_secret
 head /dev/urandom | tr -dc A-Za-z0-9 | head -c 50 &gt; secrets/db_encrypt
 </code></pre>
 <h4 id="gitlab-oauth">Gitlab OAuth</h4>
