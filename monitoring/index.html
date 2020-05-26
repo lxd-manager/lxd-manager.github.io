@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Migration - lxd-manager</title>
+  <title>Monitoring - lxd-manager</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Migration";
-    var mkdocs_page_input_path = "migration.md";
+    var mkdocs_page_name = "Monitoring";
+    var mkdocs_page_input_path = "monitoring.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -59,42 +59,30 @@
                     <li class="toctree-l1"><a class="reference internal" href="../host-setup/">Host-Setup</a>
                     </li>
                 </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../monitoring/">Monitoring</a>
-                    </li>
-                </ul>
                 <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Migration</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Monitoring</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#import-from-any-lxd-instance">Import from any lxd instance</a>
+    <li class="toctree-l2"><a class="reference internal" href="#prometheus-grafana-stack">Prometheus Grafana Stack</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#nodes">Nodes</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#conenct-lxd-instances">Conenct lxd instances</a>
+    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#preprare-containers">Preprare containers</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#extract-the-ssh-host-keys">Extract the ssh host keys</a>
+    <li class="toctree-l3"><a class="reference internal" href="#node-exporter">Node Exporter</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#remove-profiles">Remove Profiles</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#stop-container">Stop container</a>
+    <li class="toctree-l3"><a class="reference internal" href="#reverse-proxy">Reverse Proxy</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#copy-container">Copy Container</a>
+    <li class="toctree-l2"><a class="reference internal" href="#prometheus">Prometheus</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#integration">Integration</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#host-keys">Host Keys</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#project">Project</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#ips">IPs</a>
-    </li>
-        </ul>
-    </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#grafana">Grafana</a>
     </li>
     </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../migration/">Migration</a>
                     </li>
                 </ul>
       </div>
@@ -118,7 +106,7 @@
     
       
     
-    <li>Migration</li>
+    <li>Monitoring</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -129,46 +117,60 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="migrations">Migrations</h1>
-<p>Providing seamless upgrades and migration to a new system is always preferable.</p>
-<h2 id="import-from-any-lxd-instance">Import from any lxd instance</h2>
-<p>The LXD daemons support copying of containers between each other.</p>
-<h3 id="conenct-lxd-instances">Conenct lxd instances</h3>
-<p>Therefore add one of your new hosts to the remotes of the old host, such that it is listed in </p>
-<pre><code>lxc remote ls
+                <h1 id="monitoring">Monitoring</h1>
+<p>The hosts for the containers are vital to the whole system. Therefore it is suggested to monitor them. This helps with placement of new containers too.</p>
+<p>A solid approach is to use the prometheus node exporter as explained below</p>
+<h2 id="prometheus-grafana-stack">Prometheus Grafana Stack</h2>
+<p>Please deploy a Prometheus Grafana stack.</p>
+<h2 id="nodes">Nodes</h2>
+<p>For the nodes to provide metrics, they need to export them via <code>node_exporter</code>.
+Unfortunately the current version does not support basic auth and TLS. Therefore use a reverse proxy and there is no excuse for not using TLS with valid certificates.</p>
+<h3 id="installation">Installation</h3>
+<pre><code>apt-get install prometheus-node-exporter nginx certbot python3-certbot-nginx
 </code></pre>
-<p>as e.g. new-lxd</p>
-<h3 id="preprare-containers">Preprare containers</h3>
-<p>While the container is still running on the old host:</p>
-<h4 id="extract-the-ssh-host-keys">Extract the ssh host keys</h4>
-<p>To preserve the ssh host keys and keep the fingerprint:</p>
-<pre><code>host$ lxc exec &lt;ctname&gt; bash
+<h3 id="node-exporter">Node Exporter</h3>
+<p>To hide the node exporter to localhost and include the btrfs mounts, change <code>/etc/default/prometheus-node-exporter</code></p>
+<pre><code>ARGS="--web.listen-address=\"127.0.0.1:9100\" --collector.filesystem.ignored-mount-points=\"^/(dev|proc|run|sys|mnt|var/lib/docker|snap)($|/)\""
+</code></pre>
+<p>and restart the service</p>
+<h3 id="reverse-proxy">Reverse Proxy</h3>
+<p>The nginx provides TLS and Basic Auth. Add a section to <code>/etc/nginx/sites-enabled/default</code></p>
+<pre><code>location /metrics {
+    proxy_pass http://localhost:9100;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
-container$ for i in /etc/ssh/ssh_host_*; do echo $i; cat $i; echo ''; done
+    proxy_buffering off;
+    proxy_request_buffering off;
+
+    auth_basic       "Scraper’s Area";
+    auth_basic_user_file /etc/nginx/.htpasswd; 
+}
 </code></pre>
-<p>Keep the output of the loop in a safe place, as they can be used to impersonate the container</p>
-<h4 id="remove-profiles">Remove Profiles</h4>
-<p>If your container has profiles apart from the default profile, remove them by</p>
-<pre><code>lxc config edit &lt;ctname&gt;
+<p>Set the correct <code>server_name</code> from <code>_</code> to:</p>
+<pre><code>server_name public.dns.tld;
 </code></pre>
-<h4 id="stop-container">Stop container</h4>
-<p>Live migration of containers is possible, but not recommended. </p>
-<pre><code>lxc stop &lt;ctname&gt;
+<p>And provide a htpasswd formated user in <code>/etc/nginx/.htpasswd</code></p>
+<p>Then run</p>
+<pre><code>sudo certbot --nginx
 </code></pre>
-<h3 id="copy-container">Copy Container</h3>
-<pre><code>lxc copy &lt;ctname&gt; new-lxd:
+<h2 id="prometheus">Prometheus</h2>
+<p>To your prometheus config add a job:</p>
+<pre><code>  - job_name: 'nodeexporter'
+    scrape_interval: 1m
+    scheme: https
+    basic_auth:
+      username: scrape
+      password: ***
+    static_configs:
+      - targets: 
+         - 'public.dns.tld'
 </code></pre>
-<h3 id="integration">Integration</h3>
-<h4 id="host-keys">Host Keys</h4>
-<p>Wait until the background synchronisation registered the new container. Once you know the ID, go to
-https://your-manager.tld/api/container/&lt; ID &gt;/import_keys/
-where you can paste the output of the host keys command.
-This allows to use the same host keys as before, but they are now managed by the application.</p>
-<h4 id="project">Project</h4>
-<p>Assign the container to a project to grant access to non-admin users at https://your-manager.tld/api/container/&lt; ID &gt;/ </p>
-<p>You may then redeploy the keys to fully integrate the instance into lxd-manager.</p>
-<h4 id="ips">IPs</h4>
-<p>If your container possessed special IPs, please add then through the UI and restart your container. </p>
+<p>and reload the config.</p>
+<h2 id="grafana">Grafana</h2>
+<p>Then design a dashboard as you please.</p>
               
             </div>
           </div>
@@ -176,8 +178,10 @@ This allows to use the same host keys as before, but they are now managed by the
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../migration/" class="btn btn-neutral float-right" title="Migration">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-        <a href="../monitoring/" class="btn btn-neutral" title="Monitoring"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+        <a href="../host-setup/" class="btn btn-neutral" title="Host-Setup"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -203,8 +207,10 @@ This allows to use the same host keys as before, but they are now managed by the
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../monitoring/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../host-setup/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
+      
+        <span style="margin-left: 15px"><a href="../migration/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
