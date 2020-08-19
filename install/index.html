@@ -51,6 +51,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">User Guide</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../containers/">Containers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Admin Guide</span></p>
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Installation</a>
     <ul class="current">
@@ -84,16 +92,12 @@
     </li>
     </ul>
                     </li>
-                </ul>
-                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../host-setup/">Host-Setup</a>
                     </li>
-                </ul>
-                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../images/">Images</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../monitoring/">Monitoring</a>
                     </li>
-                </ul>
-                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../migration/">Migration</a>
                     </li>
                 </ul>
@@ -116,6 +120,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="..">Docs</a> &raquo;</li>
     
+      
+        
+          <li>Admin Guide &raquo;</li>
+        
       
     
     <li>Installation</li>
@@ -195,6 +203,8 @@ head /dev/urandom | tr -dc A-Za-z0-9 | head -c 50 &gt; secrets/db_encrypt
 <p>set the gitlab url for the services beat, api, celery environments:</p>
 <pre><code>SOCIAL_AUTH_GITLAB_API_URL: "https://gitlab.yourdomain.com"
 </code></pre>
+<p>As oauth provides authentication but no authorization, an administrator has to grant new users the required permissions after they first linked their oauth identity.
+This is performed by granting them the <code>Can view container</code> permission at <code>/admin/auth/user/</code></p>
 <h3 id="run">Run</h3>
 <pre><code>docker-compose pull
 docker-compose up -d
@@ -214,7 +224,7 @@ docker-compose up -d
         <a href="../host-setup/" class="btn btn-neutral float-right" title="Host-Setup">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../containers/" class="btn btn-neutral" title="Containers"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -240,7 +250,7 @@ docker-compose up -d
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../containers/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../host-setup/" style="color: #fcfcfc">Next &raquo;</a></span>

@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Migration - lxd-manager</title>
+  <title>Containers - lxd-manager</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Migration";
-    var mkdocs_page_input_path = "migration.md";
+    var mkdocs_page_name = "Containers";
+    var mkdocs_page_input_path = "containers.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -52,14 +52,22 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">User Guide</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../containers/">Containers</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Containers</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#list-your-containers">List your containers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-a-container">Create a container</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#edit-a-container">Edit a container</a>
+    </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Admin Guide</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../host-setup/">Host-Setup</a>
@@ -68,37 +76,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../monitoring/">Monitoring</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Migration</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#import-from-any-lxd-instance">Import from any lxd instance</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#conenct-lxd-instances">Conenct lxd instances</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#preprare-containers">Preprare containers</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#extract-the-ssh-host-keys">Extract the ssh host keys</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#remove-profiles">Remove Profiles</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#stop-container">Stop container</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#copy-container">Copy Container</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#integration">Integration</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#host-keys">Host Keys</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#project">Project</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#ips">IPs</a>
-    </li>
-        </ul>
-    </li>
-        </ul>
-    </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../migration/">Migration</a>
                     </li>
                 </ul>
       </div>
@@ -122,11 +100,11 @@
     
       
         
-          <li>Admin Guide &raquo;</li>
+          <li>User Guide &raquo;</li>
         
       
     
-    <li>Migration</li>
+    <li>Containers</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -137,46 +115,25 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="migrations">Migrations</h1>
-<p>Providing seamless upgrades and migration to a new system is always preferable.</p>
-<h2 id="import-from-any-lxd-instance">Import from any lxd instance</h2>
-<p>The LXD daemons support copying of containers between each other.</p>
-<h3 id="conenct-lxd-instances">Conenct lxd instances</h3>
-<p>Therefore add one of your new hosts to the remotes of the old host, such that it is listed in </p>
-<pre><code>lxc remote ls
+                <h1 id="basic-container-operations">Basic Container operations</h1>
+<p>The general creation and modification of containers is hopefully intuitive.</p>
+<h2 id="list-your-containers">List your containers</h2>
+<p>You get a list of all containers you have access to in a listing overview. You can search for arbitrary fields to limit the list.
+Light gray IPs are either assigned, but not present on the container or present on the container without reservation in the dashboard. A restart resolves most non-malicious situations.
+<img alt="Screenshot" src="../screenshots/container.png" /></p>
+<h2 id="create-a-container">Create a container</h2>
+<p>To create a new container, klick the green plus button on the bottom right. Please decide if you want to run another container solution such as docker inside the container. In this case, mark the Nesting checkbox.</p>
+<p>After creation, the container is in a stopped state. Start the container and it will acquire an IP and deploy your Gitlab SSH keys to the default user. Soon the hostname of your container will be resolvable and you can connect to the new instance by e.g.</p>
+<pre><code>ssh ubuntu@testct.cts.domain.tld
 </code></pre>
-<p>as e.g. new-lxd</p>
-<h3 id="preprare-containers">Preprare containers</h3>
-<p>While the container is still running on the old host:</p>
-<h4 id="extract-the-ssh-host-keys">Extract the ssh host keys</h4>
-<p>To preserve the ssh host keys and keep the fingerprint:</p>
-<pre><code>host$ lxc exec &lt;ctname&gt; bash
-
-container$ for i in /etc/ssh/ssh_host_*; do echo $i; cat $i; echo ''; done
-</code></pre>
-<p>Keep the output of the loop in a safe place, as they can be used to impersonate the container</p>
-<h4 id="remove-profiles">Remove Profiles</h4>
-<p>If your container has profiles apart from the default profile, remove them by</p>
-<pre><code>lxc config edit &lt;ctname&gt;
-</code></pre>
-<h4 id="stop-container">Stop container</h4>
-<p>Live migration of containers is possible, but not recommended. </p>
-<pre><code>lxc stop &lt;ctname&gt;
-</code></pre>
-<h3 id="copy-container">Copy Container</h3>
-<pre><code>lxc copy &lt;ctname&gt; new-lxd:
-</code></pre>
-<h3 id="integration">Integration</h3>
-<h4 id="host-keys">Host Keys</h4>
-<p>Wait until the background synchronisation registered the new container. Once you know the ID, go to
-https://your-manager.tld/api/container/&lt; ID &gt;/import_keys/
-where you can paste the output of the host keys command.
-This allows to use the same host keys as before, but they are now managed by the application.</p>
-<h4 id="project">Project</h4>
-<p>Assign the container to a project to grant access to non-admin users at https://your-manager.tld/api/container/&lt; ID &gt;/ </p>
-<p>You may then redeploy the keys to fully integrate the instance into lxd-manager.</p>
-<h4 id="ips">IPs</h4>
-<p>If your container possessed special IPs, please add then through the UI and restart your container. </p>
+<p><img alt="Screenshot" src="../screenshots/create-container.png" /></p>
+<h2 id="edit-a-container">Edit a container</h2>
+<p>All container can be edited by klicking on the green cog on the left of the name. This modal allows you then to change some parameters of the container and add or delete legacy IPs.</p>
+<p>Adding or removing an IP requires either to restart the container or you have to add it manually inside the container. If the project changes of there the users of the project changed, you can redeploy keys to add the new keys to the container for ssh access. </p>
+<blockquote>
+<p>⚠️ <strong>existing SSH keys will not be deleted</strong></p>
+<p><img alt="Screenshot" src="../screenshots/edit-container.png" /></p>
+</blockquote>
               
             </div>
           </div>
@@ -184,8 +141,10 @@ This allows to use the same host keys as before, but they are now managed by the
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../install/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-        <a href="../monitoring/" class="btn btn-neutral" title="Monitoring"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+        <a href="../overview/" class="btn btn-neutral" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -211,8 +170,10 @@ This allows to use the same host keys as before, but they are now managed by the
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../monitoring/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../overview/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
+      
+        <span style="margin-left: 15px"><a href="../install/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
