@@ -50,6 +50,12 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#users">Users</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#administrators">Administrators</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#background">Background</a>
+    </li>
     </ul>
                     </li>
                 </ul>
@@ -106,15 +112,21 @@
             <div class="section">
               
                 <h1 id="lxd-manager">LXD manager</h1>
-<p>The lxd-manager is a management software which is used to orchestrate multiple hosts of lxd containers with a specific deep integration. It was built with very specific demands, but might be useful to someone else.</p>
-<p>We needed lighweight containers on different kinds of hosts, which behave like physical maschines. Unfortunately with inhomogenious hosts, the lxd built in cluster is not reliable and we barely rely on cluster feature, as most often we want control over where a container is deployed.</p>
-<p>On top, each container is attached with two network interfaces.</p>
+<p>The lxd-manager is a management software which is used to orchestrate multiple hosts of lxd containers with  specific deep integrations. It was built with very specific demands, but might be useful to someone else.</p>
+<p><img alt="Screenshot" src="screenshots/container.png" /></p>
+<h2 id="users">Users</h2>
+<p>If you are a user and want basic overview how to interact with the manager, have a look at the <a href="overview/">User Guide</a> section</p>
+<h2 id="administrators">Administrators</h2>
+<p>For guidance on installing lxd-manager on your infrastructure, have a look at the <a href="install/">installation section</a> </p>
+<h2 id="background">Background</h2>
+<p>We needed lightweight containers on different kinds of hosts, which behave like physical machines. Unfortunately with inhomogeneous hosts, the lxd built-in cluster is not reliable and we barely rely on cluster features, as most often we want full control over where a container is deployed.</p>
+<p>On top, each container is attached to two network interfaces.</p>
 <ul>
 <li>eth0 is connected to a bridge of the host and gets an IPv4 NATed address</li>
 <li>eth1 is bridged directly to the hosts interface and obtains a SLAAC IPv6 address. If required, users can assign IPv4 addresses to this interface through our api.</li>
 </ul>
-<p>The service contains an authoritative DNS server for all containers which are reachable publicly.</p>
-<p>Another useful feature is the integration with gitlab not only for user authentication but also for direct provisioning of ssh keys from the user's gitlab profile.</p>
+<p>The service contains an authoritative DNS server for all containers which are publicly reachable.</p>
+<p>Another useful feature is the integration with gitlab. Oauth for user authentication and direct provisioning of ssh keys from the user's gitlab profile.</p>
 <p>Unlike many lxd web UIs, this software uses its own database for persistance and has a background synchronisation service, as live polling of the lxd api is too slow. Actions are usually displayed responsive and then performed in a background task.</p>
               
             </div>
@@ -169,5 +181,5 @@
 
 <!--
 MkDocs version : 1.1.2
-Build Date UTC : 2020-08-19 22:30:54.046425+00:00
+Build Date UTC : 2020-10-08 16:14:31.818928+00:00
 -->
