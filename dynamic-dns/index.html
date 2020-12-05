@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Images - lxd-manager</title>
+  <title>Dynamic DNS - lxd-manager</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Images";
-    var mkdocs_page_input_path = "images.md";
+    var mkdocs_page_name = "Dynamic DNS";
+    var mkdocs_page_input_path = "dynamic-dns.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -62,13 +62,29 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../dynamic-dns/">Dynamic DNS</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Dynamic DNS</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#static-extra-entries">Static Extra Entries</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#dynamic-updates">Dynamic Updates</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#service-user">Service User</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#auth-token">Auth Token</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rr-template">RR Template</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#update-value">Update Value</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dehydrated-hook-script">Dehydrated Hook Script</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../host-setup/">Host-Setup</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Images</a>
-    <ul class="current">
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../images/">Images</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../monitoring/">Monitoring</a>
                     </li>
@@ -100,7 +116,7 @@
         
       
     
-    <li>Images</li>
+    <li>Dynamic DNS</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -111,16 +127,42 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="images">Images</h1>
-<p>Contrary to an LXD managed cluster, you have to specify which images should be available on the hosts.</p>
-<p>To add a new image to the list of images to be synced, create an image object at <code>/api/image/</code>
-with e.g. </p>
-<pre><code>"sync": true,
-"server": "https://cloud-images.ubuntu.com/releases",
-"protocol": "simplestreams",
-"alias": "x"
+                <h1 id="dynamic-dns">Dynamic DNS</h1>
+<p>The lxd-manager takes full control over the delegated DNS domain and acts as authoritative server. For some applications it might however be useful add custom entries in this zone.</p>
+<h2 id="static-extra-entries">Static Extra Entries</h2>
+<p>To add static entries to your delegated zone, add them in the admin panel at
+<a href="admin/dns/zoneextra/">/admin/dns/zoneextra/</a></p>
+<p>They are parsed as bind zone files, may contain multiple lines and use an ORIGIN as defined. To create a wildcard RR for anything under k3s.your-delegation.tld to 1.2.3.4 use. </p>
+<pre><code>*.k3s  3600 IN A 1.2.3.4
 </code></pre>
-<p>Make sure that the images have a working <code>cloud-init</code> installed, as this is necessary for automatic provisioning</p>
+<p>The description is just to keep entries organized.</p>
+<h2 id="dynamic-updates">Dynamic Updates</h2>
+<p>For more complex scenarios, there is a need for API access to the resource records of the authoritative zone.
+This is for example the case for wildcard ACME TLS certificates.</p>
+<h3 id="service-user">Service User</h3>
+<p>To authenticate updates to the RR, first select a user, or better, create a service user at <a href="/admin/auth/user/">/admin/auth/user/</a>, which is local to the lxd-manager and not authenticated via gitlab oauth.</p>
+<h3 id="auth-token">Auth Token</h3>
+<p>Then add an access token to this user at <a href="/admin/authtoken/tokenproxy/add/">/admin/authtoken/tokenproxy/add/</a>. Use the magnifier icon to search the service user's id.
+On the token overview <a href="/admin/authtoken/tokenproxy/">/admin/authtoken/tokenproxy/</a>, copy the key.</p>
+<h3 id="rr-template">RR Template</h3>
+<p>In this step, create the template for the dynamic entry at <a href="/admin/dns/dynamicentry/">/admin/dns/dynamicentry/</a>. The dynamic value is inserted by <code>%s</code>. As an example, to create a template for an ACME challenge TXT RR for the subdomain p.your-delegation, use</p>
+<pre><code>_acme-challenge.p 60 IN TXT "%s"
+</code></pre>
+<p>and set the service user as the <em>owner</em>. Leave the <em>value</em> empty. Note down the ID of the template (seen in the URL admin/dns/dynamicentry<strong>/1/</strong>change/)</p>
+<h3 id="update-value">Update Value</h3>
+<p>To set the value, use e.g. this curl command</p>
+<pre><code>curl -H "Authorization: Token ${TOKEN}" -X PUT -H "Content-Type: application/json" -d "{\"value\":\"${4}\"}"  ${APIURL}/api/dynamicentry/${UPDATEID}/
+</code></pre>
+<p>where</p>
+<pre><code># the api location without trailing /
+APIURL="https://lxd-manager.tld"
+# the id of the updateable object, found on the /api/dynamicentry/ list overview
+UPDATEID= e.g. 1
+# the token of one of the owners
+TOKEN=e.g. "123987acf9871092837918279381723"
+</code></pre>
+<h3 id="dehydrated-hook-script">Dehydrated Hook Script</h3>
+<p>If you use <a href="dehydrated">https://dehydrated.io/</a> to obtain your certifcates, use the hook script at <a href="https://github.com/lxd-manager/deploy/blob/master/dns_hooks/dehydrated-hook.sh">dehydrated-hook.sh</a> directly and adapt it with the values from above.</p>
               
             </div>
           </div>
@@ -128,10 +170,10 @@ with e.g. </p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../monitoring/" class="btn btn-neutral float-right" title="Monitoring">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../host-setup/" class="btn btn-neutral float-right" title="Host-Setup">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../host-setup/" class="btn btn-neutral" title="Host-Setup"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../install/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -157,10 +199,10 @@ with e.g. </p>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../host-setup/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../install/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../monitoring/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../host-setup/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
