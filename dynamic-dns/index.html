@@ -128,7 +128,7 @@
             <div class="section">
               
                 <h1 id="dynamic-dns">Dynamic DNS</h1>
-<p>The lxd-manager takes full control over the delegated DNS domain and acts as authoritative server. For some applications it might however be useful add custom entries in this zone.</p>
+<p>The lxd-manager takes full control over the delegated DNS domain and acts as authoritative server. For some applications it might however be useful to add custom entries in this zone.</p>
 <h2 id="static-extra-entries">Static Extra Entries</h2>
 <p>To add static entries to your delegated zone, add them in the admin panel at
 <a href="admin/dns/zoneextra/">/admin/dns/zoneextra/</a></p>
@@ -151,7 +151,7 @@ On the token overview <a href="/admin/authtoken/tokenproxy/">/admin/authtoken/to
 <p>and set the service user as the <em>owner</em>. Leave the <em>value</em> empty. Note down the ID of the template (seen in the URL admin/dns/dynamicentry<strong>/1/</strong>change/)</p>
 <h3 id="update-value">Update Value</h3>
 <p>To set the value, use e.g. this curl command</p>
-<pre><code>curl -H "Authorization: Token ${TOKEN}" -X PUT -H "Content-Type: application/json" -d "{\"value\":\"${4}\"}"  ${APIURL}/api/dynamicentry/${UPDATEID}/
+<pre><code>curl -H "Authorization: Token ${TOKEN}" -X PUT -H "Content-Type: application/json" -d "{\"value\":\"${VALUE}\"}"  ${APIURL}/api/dynamicentry/${UPDATEID}/
 </code></pre>
 <p>where</p>
 <pre><code># the api location without trailing /
@@ -160,6 +160,8 @@ APIURL="https://lxd-manager.tld"
 UPDATEID= e.g. 1
 # the token of one of the owners
 TOKEN=e.g. "123987acf9871092837918279381723"
+# the value you want to set
+VALUE=e.g. "flag!"
 </code></pre>
 <h3 id="dehydrated-hook-script">Dehydrated Hook Script</h3>
 <p>If you use <a href="dehydrated">https://dehydrated.io/</a> to obtain your certifcates, use the hook script at <a href="https://github.com/lxd-manager/deploy/blob/master/dns_hooks/dehydrated-hook.sh">dehydrated-hook.sh</a> directly and adapt it with the values from above.</p>
